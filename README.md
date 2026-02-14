@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Screenplayer
 
-## Getting Started
+Interaction-driven audiovisual instrument built with Next.js, Three.js, Web Audio, and an AI conductor.
 
-First, run the development server:
+## What It Does
+- Turns pointer + keyboard activity into real-time synth + visuals.
+- Three.js surface renders particles/ripples/emotes that mirror audio energy.
+- AI conductor (GPT-5-nano by default) nudges tempo, density, swing, scale, and instrument mix based on 5s interaction snapshots.
 
+## Quick Start
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+Open http://localhost:3000 and hit “Start capture” to begin audio + visuals.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
+- `npm run dev` – start Next dev server.
+- `npm run lint` – eslint + prettier check.
+- `npm run build` – Next production build.
+- `npm start` – run built app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture
+- `interaction/*` – per-frame metrics, sliding snapshots, event buffer.
+- `ui/*` – Three.js surface (particles, ripples, emotes) driven by interaction signals.
+- `audio/*` – Web Audio instruments, live mapper reacting to events, audio rig bootstrap.
+- `ai/*` – music directives + conductor loop (JSON schema, adaptive interpolation).
+- `state/*` – shared directive/snapshot state helpers.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## AI Conductor
+- Model: default `gpt-5-nano` (configurable).
+- Cadence: ~6s interval with adaptive lerp (faster when energy/rhythm/chaos are high).
+- Output: JSON `MusicDirectiveSchema` only; no note scheduling.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes
+- Uses npm (no pnpm/yarn/bun).
+- No samples; all synthesis is deterministic Web Audio.
