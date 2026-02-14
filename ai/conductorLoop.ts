@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { Output, generateText } from "ai";
 import { z } from "zod";
 import { InteractionSnapshot } from "../interaction/snapshot";
 import {
@@ -49,7 +49,7 @@ export function createConductor(
   let tickId: ReturnType<typeof setInterval> | undefined;
   let inFlight = false;
 
-  const model = options?.model ?? "gpt-5-nano";
+  const model = options?.model ?? "openai/gpt-5-nano";
   const intervalMs = options?.intervalMs ?? 6000;
   const baseLerp = options?.baseLerp ?? 0.08;
 
@@ -91,12 +91,23 @@ async function requestDirective(
   previous: MusicDirective,
   model: string,
 ): Promise<MusicDirective> {
-  const result = await generateObject({
+  const result = await generateText({
     model,
-    schema: MusicDirectiveSchema,
     prompt: buildPrompt(snapshot, previous),
+    output: Output.object({ schema: MusicDirectiveSchema }),
+    temperature: 0.55,
+    presencePenalty: 0.2,
   });
-  return result.object;
+  if (result.output !== undefined) {
+    console.log("Result", result.output);
+    return result.output;
+  }
+  const parsed = parseDirective(result.text);
+  if (parsed !== undefined) {
+    console.log("Result", parsed);
+    return parsed;
+  }
+  return previous;
 }
 
 function buildPrompt(
@@ -104,15 +115,17 @@ function buildPrompt(
   previous: MusicDirective,
 ): string {
   return [
-    "You are the conductor of a generative audio system.",
-    "You set system parameters only (tempo, swing, density, scale, mood, instrument choices, mapping adjustments).",
-    "Never schedule notes or output prose; respond with JSON matching the schema.",
-    "Behavior expectations:",
-    "- React to user behavior: high energy or rhythmIntent can permit quicker shifts; low activity should glide slowly.",
-    "- Keep changes smooth; avoid abrupt jumps unless chaos is high and density is low.",
+    "You control a live music system that is already playing.",
+    "You only adjust high-level parameters: tempo, swing, density, scale, mood, instrument choices, mappingAdjustments.",
+    "Do not propose notes, phrases, or commentary. Output JSON that matches MusicDirectiveSchema.",
+    "Guidance:",
+    "- React to behavior: if energy > 0.8 raise bpm by 8–18 and density >= 0.25; if energy < 0.25 ease bpm toward 70–90.",
+    "- If chaos > 0.6 increase swing by 0.05–0.12 and raise chaosInfluence; if chaos < 0.2 lower swing below 0.08.",
+    "- Keep evolution smooth; avoid drastic jumps unless chaos is high and density is low.",
+    "- Map tendencies: focusY low -> darker/warmer; focusY high -> brighter; wider focusX -> more harmonic motion; chaos -> tasteful fills only if density < 0.8.",
     "- Keep bpm 60-160, swing 0-0.5, density 0-1.",
-    "- Map tendencies: focusY lower -> darker/warmer; focusY higher -> brighter; focusX spread -> harmonic motion; chaos -> tasteful fills only when density < 0.8.",
-    "- If uncertain, lean toward previous directive while following current snapshot trends.",
+    "- Instruments influence timbre only; the audio engine handles sequencing.",
+    "- Favor coherent, song-like flow rather than random parameter swings.",
     "Respond ONLY with JSON.",
     "",
     `Previous directive: ${JSON.stringify(previous)}`,
@@ -132,4 +145,17 @@ function computeLerp(base: number, snapshot: InteractionSnapshot): number {
     return 0.45;
   }
   return amount;
+}
+
+function parseDirective(text: string): MusicDirective | undefined {
+  try {
+    const raw = JSON.parse(text);
+    const checked = MusicDirectiveSchema.safeParse(raw);
+    if (checked.success) {
+      return checked.data;
+    }
+  } catch (error) {
+    console.error("directive parse error", error);
+  }
+  return undefined;
 }
