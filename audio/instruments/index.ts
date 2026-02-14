@@ -4,5 +4,4 @@ export { createKick } from "./kick";
 export { createLead } from "./lead";
 export { createSnare } from "./snare";
 export { createTexture } from "./texture";
-export { createSilentInstrument } from "./silent";
-export type { Instrument, InstrumentTrigger } from "./types";
+export type { Instrument, InstrumentTrigger, InstrumentFactory } from "./types";

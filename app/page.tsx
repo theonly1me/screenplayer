@@ -5,12 +5,14 @@ import { createInteractionMonitor, InteractionMonitor } from "../interaction/mon
 import { InteractionSnapshot, snapshotFromSignals } from "../interaction/snapshot";
 import { readInteractionEvents } from "../interaction/events";
 import { createThreeSurface, ThreeSurface } from "../ui/threeSurface";
+import { createAudioRig, AudioRig } from "../audio/rig";
 
 type OverlayMetrics = InteractionSnapshot & { hold: number; keypressRate: number };
 
 export default function Home() {
   const monitor = useMemo<InteractionMonitor>(() => createInteractionMonitor(), []);
   const surfaceRef = useRef<ThreeSurface | undefined>(undefined);
+  const audioRigRef = useRef<AudioRig | undefined>(undefined);
   const [canvasEl, setCanvasEl] = useState<HTMLCanvasElement | undefined>(undefined);
   const [started, setStarted] = useState(false);
   const [pendingEvents, setPendingEvents] = useState(0);
@@ -49,6 +51,8 @@ export default function Home() {
     return () => {
       instance.dispose();
       surfaceRef.current = undefined;
+      audioRigRef.current?.dispose();
+      audioRigRef.current = undefined;
     };
   }, [canvasEl]);
  
@@ -100,6 +104,10 @@ export default function Home() {
             className="rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-black transition hover:bg-white"
             onClick={() => {
               setStarted(true);
+              if (audioRigRef.current === undefined) {
+                audioRigRef.current = createAudioRig();
+              }
+              audioRigRef.current?.start();
               if (overlay !== undefined) {
                 surfaceRef.current?.burstAt(overlay.focusX, overlay.focusY);
               }
@@ -112,6 +120,7 @@ export default function Home() {
             className="rounded-full border border-white/30 px-4 py-2 text-sm text-white hover:border-white/60"
             onClick={() => {
               monitor.stop();
+              audioRigRef.current?.stop();
               setStarted(false);
             }}
           >
