@@ -1,6 +1,10 @@
 import { defaultWindow, FrameSignal, MetricsWindow } from "./metrics";
 import { snapshotFromSignals, InteractionSnapshot } from "./snapshot";
-import { computeActivityDensity, computeHold, computeKeypressRate } from "./monitorUtils";
+import {
+  computeActivityDensity,
+  computeHold,
+  computeKeypressRate,
+} from "./monitorUtils";
 import { createMonitorHandlers } from "./monitorHandlers";
 import { createMonitorState } from "./monitorState";
 
@@ -18,7 +22,9 @@ export type InteractionMonitor = {
   latestSignal: () => FrameSignal | undefined;
 };
 
-export function createInteractionMonitor(options?: MonitorOptions): InteractionMonitor {
+export function createInteractionMonitor(
+  options?: MonitorOptions,
+): InteractionMonitor {
   const windowMs = options?.windowMs ?? defaultWindow.windowMs;
   const metricsWindow: MetricsWindow = { windowMs, samples: [] };
   const listeners: Listener[] = [];
@@ -28,7 +34,9 @@ export function createInteractionMonitor(options?: MonitorOptions): InteractionM
   const emit = (signal: FrameSignal): void => {
     lastSignal = signal;
     metricsWindow.samples.push(signal);
-    metricsWindow.samples = metricsWindow.samples.filter((sample) => signal.timestamp - sample.timestamp <= metricsWindow.windowMs);
+    metricsWindow.samples = metricsWindow.samples.filter(
+      (sample) => signal.timestamp - sample.timestamp <= metricsWindow.windowMs,
+    );
     for (const listener of listeners) {
       listener(signal);
     }
@@ -63,7 +71,12 @@ export function createInteractionMonitor(options?: MonitorOptions): InteractionM
     }
   };
 
-  const { handlePointerMove, handlePointerDown, handlePointerUp, handleKeydown } = createMonitorHandlers(state, metricsWindow);
+  const {
+    handlePointerMove,
+    handlePointerDown,
+    handlePointerUp,
+    handleKeydown,
+  } = createMonitorHandlers(state, metricsWindow);
 
   const start = (): void => {
     if (state.frameId !== undefined) {
@@ -72,8 +85,12 @@ export function createInteractionMonitor(options?: MonitorOptions): InteractionM
     if (typeof window === "undefined") {
       return;
     }
-    window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    window.addEventListener("pointerdown", handlePointerDown, { passive: true });
+    window.addEventListener("pointermove", handlePointerMove, {
+      passive: true,
+    });
+    window.addEventListener("pointerdown", handlePointerDown, {
+      passive: true,
+    });
     window.addEventListener("pointerup", handlePointerUp, { passive: true });
     window.addEventListener("keydown", handleKeydown, { passive: true });
     state.frameId = window.requestAnimationFrame(tick);
@@ -111,7 +128,8 @@ export function createInteractionMonitor(options?: MonitorOptions): InteractionM
     };
   };
 
-  const latestSnapshot = (): InteractionSnapshot => snapshotFromSignals(metricsWindow.samples);
+  const latestSnapshot = (): InteractionSnapshot =>
+    snapshotFromSignals(metricsWindow.samples);
   const latestSignal = (): FrameSignal | undefined => lastSignal;
 
   return {

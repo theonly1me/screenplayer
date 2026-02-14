@@ -18,7 +18,10 @@ const zeroSnapshot: InteractionSnapshot = {
   rhythmIntent: 0,
 };
 
-function averagedSnapshot(accumulated: InteractionSnapshot, count: number): InteractionSnapshot {
+function averagedSnapshot(
+  accumulated: InteractionSnapshot,
+  count: number,
+): InteractionSnapshot {
   if (count === 0) {
     return zeroSnapshot;
   }
@@ -32,7 +35,9 @@ function averagedSnapshot(accumulated: InteractionSnapshot, count: number): Inte
   };
 }
 
-export function snapshotFromSignals(signals: ReadonlyArray<FrameSignal>): InteractionSnapshot {
+export function snapshotFromSignals(
+  signals: ReadonlyArray<FrameSignal>,
+): InteractionSnapshot {
   if (signals.length === 0) {
     return zeroSnapshot;
   }

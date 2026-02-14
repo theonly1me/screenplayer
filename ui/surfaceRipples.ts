@@ -17,7 +17,12 @@ export type RippleSystem = {
 export function createRippleSystem(scene: THREE.Scene): RippleSystem {
   let ripples: Ripple[] = [];
 
-  const spawn = (x: number, y: number, magnitude: number, hue: number): void => {
+  const spawn = (
+    x: number,
+    y: number,
+    magnitude: number,
+    hue: number,
+  ): void => {
     const ringGeo = new THREE.RingGeometry(0.01, 0.08, 32);
     const ringMat = new THREE.MeshBasicMaterial({
       color: new THREE.Color().setHSL(hue / 360, 0.7, 0.7),

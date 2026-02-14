@@ -12,7 +12,10 @@ export type VisualInput = {
 };
 
 export function signalToVisualInput(signal: FrameSignal): VisualInput {
-  const hue = Math.max(0, Math.min(360, 200 + signal.focusX * 140 - signal.focusY * 80));
+  const hue = Math.max(
+    0,
+    Math.min(360, 200 + signal.focusX * 140 - signal.focusY * 80),
+  );
   return {
     energy: signal.pointerSpeed,
     chaos: signal.variance,

@@ -1,19 +1,39 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { createInteractionMonitor, InteractionMonitor } from "../interaction/monitor";
-import { InteractionSnapshot, snapshotFromSignals } from "../interaction/snapshot";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import {
+  createInteractionMonitor,
+  InteractionMonitor,
+} from "../interaction/monitor";
+import {
+  InteractionSnapshot,
+  snapshotFromSignals,
+} from "../interaction/snapshot";
 import { readInteractionEvents } from "../interaction/events";
 import { createThreeSurface, ThreeSurface } from "../ui/threeSurface";
 import { createAudioRig, AudioRig } from "../audio/rig";
 
-type OverlayMetrics = InteractionSnapshot & { hold: number; keypressRate: number };
+type OverlayMetrics = InteractionSnapshot & {
+  hold: number;
+  keypressRate: number;
+};
 
 export default function Home() {
-  const monitor = useMemo<InteractionMonitor>(() => createInteractionMonitor(), []);
+  const monitor = useMemo<InteractionMonitor>(
+    () => createInteractionMonitor(),
+    [],
+  );
   const surfaceRef = useRef<ThreeSurface | undefined>(undefined);
   const audioRigRef = useRef<AudioRig | undefined>(undefined);
-  const [canvasEl, setCanvasEl] = useState<HTMLCanvasElement | undefined>(undefined);
+  const [canvasEl, setCanvasEl] = useState<HTMLCanvasElement | undefined>(
+    undefined,
+  );
   const [started, setStarted] = useState(false);
   const [pendingEvents, setPendingEvents] = useState(0);
 
@@ -23,7 +43,7 @@ export default function Home() {
       signal: monitor.latestSignal(),
       snapshot: monitor.latestSnapshot(),
     }),
-    () => ({ signal: undefined, snapshot: snapshotFromSignals([]) })
+    () => ({ signal: undefined, snapshot: snapshotFromSignals([]) }),
   );
 
   const overlay: OverlayMetrics | undefined =
@@ -55,7 +75,7 @@ export default function Home() {
       audioRigRef.current = undefined;
     };
   }, [canvasEl]);
- 
+
   useEffect(() => {
     const unsub = monitor.subscribe((signal) => {
       surfaceRef.current?.applySignal(signal);
@@ -87,14 +107,20 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
-      <canvas ref={(node) => setCanvasEl(node ?? undefined)} className="absolute inset-0 h-full w-full" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-900 via-black to-purple-900 opacity-60" />
+      <canvas
+        ref={(node) => setCanvasEl(node ?? undefined)}
+        className="absolute inset-0 h-full w-full"
+      />
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-indigo-900 via-black to-purple-900 opacity-60" />
 
       <main className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-6 py-10">
         <header className="flex flex-col gap-2">
-          <h1 className="text-3xl font-semibold tracking-tight">Screenplayer</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">
+            Screenplayer
+          </h1>
           <p className="text-sm text-zinc-200">
-            Interact with the surface—pointer movement, presses, holds, and keys fuel both visuals and the upcoming AI conductor.
+            Interact with the surface—pointer movement, presses, holds, and keys
+            fuel both visuals and the upcoming AI conductor.
           </p>
         </header>
 
@@ -169,8 +195,9 @@ export default function Home() {
         </section>
 
         <div className="mt-6 rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-zinc-200">
-          Visual feedback: spark field reacts to speed and chaos, rings pulse on interaction, and tetra emotes pop on key impulses.
-          AI queue counts raw interaction events for the conductor loop.
+          Visual feedback: spark field reacts to speed and chaos, rings pulse on
+          interaction, and tetra emotes pop on key impulses. AI queue counts raw
+          interaction events for the conductor loop.
         </div>
       </main>
     </div>
@@ -192,7 +219,10 @@ function MetricList(props: { items: Array<[string, number]> }) {
   return (
     <div className="grid grid-cols-2 gap-2 text-sm">
       {props.items.map(([label, value]) => (
-        <div key={label} className="flex items-center justify-between rounded-md bg-white/5 px-3 py-2">
+        <div
+          key={label}
+          className="flex items-center justify-between rounded-md bg-white/5 px-3 py-2"
+        >
           <span className="text-zinc-300">{label}</span>
           <span className="font-mono text-white">{value.toFixed(2)}</span>
         </div>
@@ -202,5 +232,9 @@ function MetricList(props: { items: Array<[string, number]> }) {
 }
 
 function Placeholder() {
-  return <div className="text-sm text-zinc-400">No data yet. Hit &quot;Start capture&quot; then move / type.</div>;
+  return (
+    <div className="text-sm text-zinc-400">
+      No data yet. Hit &quot;Start capture&quot; then move / type.
+    </div>
+  );
 }

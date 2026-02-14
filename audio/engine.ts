@@ -11,7 +11,12 @@ export type AudioEngine = {
   start: () => void;
   stop: () => void;
   setLookahead: (ms: number) => void;
-  trigger: (name: string, time: number, velocity: number, note?: number) => void;
+  trigger: (
+    name: string,
+    time: number,
+    velocity: number,
+    note?: number,
+  ) => void;
   dispose: () => void;
 };
 
@@ -72,7 +77,12 @@ export function createAudioEngine(context: AudioContext): AudioEngine {
     }
   };
 
-  const trigger = (name: string, time: number, velocity: number, note?: number): void => {
+  const trigger = (
+    name: string,
+    time: number,
+    velocity: number,
+    note?: number,
+  ): void => {
     const instrument = instruments[name];
     if (instrument === undefined) {
       return;

@@ -14,7 +14,10 @@ export function normalizePointer(event: PointerEvent): PointerSample {
   };
 }
 
-export function computeHold(holdStart: number | undefined, now: number): number {
+export function computeHold(
+  holdStart: number | undefined,
+  now: number,
+): number {
   if (holdStart === undefined) {
     return 0;
   }
@@ -22,14 +25,22 @@ export function computeHold(holdStart: number | undefined, now: number): number 
   return clamp01(heldMs / 1500);
 }
 
-export function computeActivityDensity(timestamps: number[], now: number, windowMs: number): { density: number; kept: number[] } {
+export function computeActivityDensity(
+  timestamps: number[],
+  now: number,
+  windowMs: number,
+): { density: number; kept: number[] } {
   const kept = timestamps.filter((t) => now - t <= windowMs);
   const count = kept.length;
   const density = clamp01(count / 10);
   return { density, kept };
 }
 
-export function computeKeypressRate(timestamps: number[], now: number, windowMs: number): { rate: number; kept: number[] } {
+export function computeKeypressRate(
+  timestamps: number[],
+  now: number,
+  windowMs: number,
+): { rate: number; kept: number[] } {
   const kept = timestamps.filter((t) => now - t <= windowMs);
   const count = kept.length;
   const perSecond = count / (windowMs / 1000);
@@ -43,16 +54,27 @@ export function updateVariance(samples: FrameSignal[], speed: number): number {
   if (withCurrent.length === 0) {
     return 0;
   }
-  const mean = withCurrent.reduce((sum, value) => sum + value, 0) / withCurrent.length;
-  const variance = withCurrent.reduce((sum, value) => sum + (value - mean) * (value - mean), 0) / withCurrent.length;
+  const mean =
+    withCurrent.reduce((sum, value) => sum + value, 0) / withCurrent.length;
+  const variance =
+    withCurrent.reduce(
+      (sum, value) => sum + (value - mean) * (value - mean),
+      0,
+    ) / withCurrent.length;
   return clamp01(variance);
 }
 
-export function updateCurvature(previous: Direction, dx: number, dy: number): number {
+export function updateCurvature(
+  previous: Direction,
+  dx: number,
+  dy: number,
+): number {
   if (previous === undefined) {
     return 0;
   }
-  const prevMag = Math.sqrt(previous.dx * previous.dx + previous.dy * previous.dy);
+  const prevMag = Math.sqrt(
+    previous.dx * previous.dx + previous.dy * previous.dy,
+  );
   const currentMag = Math.sqrt(dx * dx + dy * dy);
   if (prevMag === 0 || currentMag === 0) {
     return 0;

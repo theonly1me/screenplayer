@@ -17,7 +17,10 @@ export type Sequencer = {
   schedule: (event: SequenceEvent) => void;
 };
 
-export function createSequencer(engine: AudioEngine, config: SequencerConfig): Sequencer {
+export function createSequencer(
+  engine: AudioEngine,
+  config: SequencerConfig,
+): Sequencer {
   let currentConfig = config;
 
   const updateConfig = (next: SequencerConfig): void => {
@@ -25,10 +28,21 @@ export function createSequencer(engine: AudioEngine, config: SequencerConfig): S
   };
 
   const schedule = (event: SequenceEvent): void => {
-    const adjustedTime = applySwing(event.time, currentConfig.swing, event.time, currentConfig.subdivision);
+    const adjustedTime = applySwing(
+      event.time,
+      currentConfig.swing,
+      event.time,
+      currentConfig.subdivision,
+    );
     engine.schedule({
       time: adjustedTime,
-      callback: () => engine.trigger(event.instrument, adjustedTime, event.velocity, event.note),
+      callback: () =>
+        engine.trigger(
+          event.instrument,
+          adjustedTime,
+          event.velocity,
+          event.note,
+        ),
     });
   };
 
@@ -38,7 +52,12 @@ export function createSequencer(engine: AudioEngine, config: SequencerConfig): S
   };
 }
 
-function applySwing(time: number, swing: number, reference: number, subdivision: number): number {
+function applySwing(
+  time: number,
+  swing: number,
+  reference: number,
+  subdivision: number,
+): number {
   if (swing <= 0) {
     return time;
   }

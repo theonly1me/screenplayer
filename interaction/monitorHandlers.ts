@@ -1,9 +1,17 @@
 import { MetricsWindow } from "./metrics";
 import { pushInteractionEvent } from "./events";
-import { clampSpeed, normalizePointer, updateCurvature, updateVariance } from "./monitorUtils";
+import {
+  clampSpeed,
+  normalizePointer,
+  updateCurvature,
+  updateVariance,
+} from "./monitorUtils";
 import { MonitorState } from "./monitorState";
 
-export function createMonitorHandlers(state: MonitorState, metricsWindow: MetricsWindow) {
+export function createMonitorHandlers(
+  state: MonitorState,
+  metricsWindow: MetricsWindow,
+) {
   const handlePointerMove = (event: PointerEvent): void => {
     const now = performance.now();
     const normalized = normalizePointer(event);
@@ -17,7 +25,10 @@ export function createMonitorHandlers(state: MonitorState, metricsWindow: Metric
         const distance = Math.sqrt(dx * dx + dy * dy);
         const speed = distance / dtMs;
         state.lastSpeed = clampSpeed(speed);
-        state.lastVariance = updateVariance(metricsWindow.samples, state.lastSpeed);
+        state.lastVariance = updateVariance(
+          metricsWindow.samples,
+          state.lastSpeed,
+        );
         state.lastCurvature = updateCurvature(state.previousDirection, dx, dy);
         state.previousDirection = { dx, dy };
       }
@@ -80,5 +91,10 @@ export function createMonitorHandlers(state: MonitorState, metricsWindow: Metric
     });
   };
 
-  return { handlePointerMove, handlePointerDown, handlePointerUp, handleKeydown };
+  return {
+    handlePointerMove,
+    handlePointerDown,
+    handlePointerUp,
+    handleKeydown,
+  };
 }

@@ -18,7 +18,12 @@ export type EmoteSystem = {
 export function createEmoteSystem(scene: THREE.Scene): EmoteSystem {
   let emotes: Emote[] = [];
 
-  const spawn = (x: number, y: number, intensity: number, hue: number): void => {
+  const spawn = (
+    x: number,
+    y: number,
+    intensity: number,
+    hue: number,
+  ): void => {
     const geo = new THREE.TetrahedronGeometry(0.05 + intensity * 0.08);
     const mat = new THREE.MeshStandardMaterial({
       color: new THREE.Color().setHSL(hue / 360, 0.8, 0.6),
@@ -32,7 +37,12 @@ export function createEmoteSystem(scene: THREE.Scene): EmoteSystem {
     const pos = toWorldPosition(x, y);
     mesh.position.set(pos.x, pos.y, 0.2);
     scene.add(mesh);
-    emotes.push({ mesh, life: 1.2, maxLife: 1.2, spin: 0.003 + intensity * 0.01 });
+    emotes.push({
+      mesh,
+      life: 1.2,
+      maxLife: 1.2,
+      spin: 0.003 + intensity * 0.01,
+    });
   };
 
   const update = (deltaMs: number, input: VisualInput): void => {

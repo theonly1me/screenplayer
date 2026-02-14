@@ -1,6 +1,8 @@
 import { Instrument, InstrumentFactory } from "./types";
 
-export const createKick: InstrumentFactory = (context: AudioContext): Instrument => {
+export const createKick: InstrumentFactory = (
+  context: AudioContext,
+): Instrument => {
   return {
     trigger: (time, velocity) => {
       const osc = context.createOscillator();

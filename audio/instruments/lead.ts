@@ -1,7 +1,9 @@
 import { Instrument, InstrumentFactory } from "./types";
 import { midiToFreq } from "../utils";
 
-export const createLead: InstrumentFactory = (context: AudioContext): Instrument => {
+export const createLead: InstrumentFactory = (
+  context: AudioContext,
+): Instrument => {
   return {
     trigger: (time, velocity, note) => {
       const osc = context.createOscillator();

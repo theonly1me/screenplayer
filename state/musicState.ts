@@ -7,7 +7,9 @@ export type MusicState = {
   lastSnapshot: InteractionSnapshot | undefined;
 };
 
-export function createMusicState(initialDirective?: MusicDirective): MusicState {
+export function createMusicState(
+  initialDirective?: MusicDirective,
+): MusicState {
   const base = initialDirective ?? defaultDirective;
   return {
     currentDirective: base,
@@ -16,14 +18,20 @@ export function createMusicState(initialDirective?: MusicDirective): MusicState 
   };
 }
 
-export function setTargetDirective(state: MusicState, directive: MusicDirective): MusicState {
+export function setTargetDirective(
+  state: MusicState,
+  directive: MusicDirective,
+): MusicState {
   return {
     ...state,
     targetDirective: directive,
   };
 }
 
-export function applySnapshot(state: MusicState, snapshot: InteractionSnapshot): MusicState {
+export function applySnapshot(
+  state: MusicState,
+  snapshot: InteractionSnapshot,
+): MusicState {
   return {
     ...state,
     lastSnapshot: snapshot,

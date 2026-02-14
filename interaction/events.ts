@@ -1,4 +1,8 @@
-export type InteractionEventType = "pointerMove" | "pointerDown" | "pointerUp" | "keyPress";
+export type InteractionEventType =
+  | "pointerMove"
+  | "pointerDown"
+  | "pointerUp"
+  | "keyPress";
 
 export type InteractionEvent = {
   type: InteractionEventType;

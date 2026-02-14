@@ -19,6 +19,10 @@ export function createGrid(): THREE.LineSegments {
 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(lines, 3));
-  const material = new THREE.LineBasicMaterial({ color: 0x303245, transparent: true, opacity: 0.35 });
+  const material = new THREE.LineBasicMaterial({
+    color: 0x303245,
+    transparent: true,
+    opacity: 0.35,
+  });
   return new THREE.LineSegments(geometry, material);
 }

@@ -1,7 +1,9 @@
 import { Instrument, InstrumentFactory } from "./types";
 import { noiseBuffer } from "../utils";
 
-export const createSnare: InstrumentFactory = (context: AudioContext): Instrument => {
+export const createSnare: InstrumentFactory = (
+  context: AudioContext,
+): Instrument => {
   const buffer = noiseBuffer(context, 0.5);
   return {
     trigger: (time, velocity) => {
@@ -24,7 +26,10 @@ export const createSnare: InstrumentFactory = (context: AudioContext): Instrumen
       toneGain.gain.setValueAtTime(velocity * 0.3, time);
       toneGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.2);
 
-      noise.connect(noiseFilter).connect(noiseGain).connect(context.destination);
+      noise
+        .connect(noiseFilter)
+        .connect(noiseGain)
+        .connect(context.destination);
       tone.connect(toneGain).connect(context.destination);
 
       noise.start(time);

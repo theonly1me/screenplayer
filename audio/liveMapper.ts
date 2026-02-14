@@ -1,6 +1,13 @@
 import { drainInteractionEvents } from "../interaction/events";
 import { createAudioEngine, AudioEngine } from "./engine";
-import { createBass, createHat, createKick, createLead, createSnare, createTexture } from "./instruments";
+import {
+  createBass,
+  createHat,
+  createKick,
+  createLead,
+  createSnare,
+  createTexture,
+} from "./instruments";
 
 export type LiveAudioMapper = {
   start: () => void;

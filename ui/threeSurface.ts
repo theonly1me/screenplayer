@@ -26,7 +26,9 @@ export type ThreeSurface = {
   dispose: () => void;
 };
 
-export function createThreeSurface(canvas: HTMLCanvasElement | undefined): ThreeSurface {
+export function createThreeSurface(
+  canvas: HTMLCanvasElement | undefined,
+): ThreeSurface {
   const state: SurfaceState = {
     renderer: undefined,
     scene: undefined,
@@ -61,7 +63,12 @@ export function createThreeSurface(canvas: HTMLCanvasElement | undefined): Three
   };
 
   const loop = (): void => {
-    if (!state.running || state.renderer === undefined || state.scene === undefined || state.camera === undefined) {
+    if (
+      !state.running ||
+      state.renderer === undefined ||
+      state.scene === undefined ||
+      state.camera === undefined
+    ) {
       return;
     }
     const now = performance.now();
@@ -83,7 +90,11 @@ export function createThreeSurface(canvas: HTMLCanvasElement | undefined): Three
       return;
     }
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+    });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     state.renderer = renderer;
@@ -91,7 +102,12 @@ export function createThreeSurface(canvas: HTMLCanvasElement | undefined): Three
     const scene = new THREE.Scene();
     state.scene = scene;
 
-    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 20);
+    const camera = new THREE.PerspectiveCamera(
+      65,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      20,
+    );
     camera.position.z = 3.2;
     state.camera = camera;
 
@@ -119,10 +135,20 @@ export function createThreeSurface(canvas: HTMLCanvasElement | undefined): Three
     state.input = signalToVisualInput(signal);
     const boost = signal.pointerSpeed + signal.keypressRate * 0.5;
     if (boost > 0.25) {
-      state.ripples?.spawn(state.input.focusX, state.input.focusY, boost, state.input.colorHue);
+      state.ripples?.spawn(
+        state.input.focusX,
+        state.input.focusY,
+        boost,
+        state.input.colorHue,
+      );
     }
     if (signal.keypressRate > 0.05) {
-      state.emotes?.spawn(state.input.focusX, state.input.focusY, signal.keypressRate, state.input.colorHue);
+      state.emotes?.spawn(
+        state.input.focusX,
+        state.input.focusY,
+        signal.keypressRate,
+        state.input.colorHue,
+      );
     }
   };
 
