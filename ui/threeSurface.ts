@@ -14,6 +14,7 @@ type SurfaceState = {
   ripples: RippleSystem | undefined;
   emotes: EmoteSystem | undefined;
   lastTime: number | undefined;
+  lastRippleAt: number | undefined;
   running: boolean;
   input: VisualInput;
   rafId: number | undefined;
@@ -37,6 +38,7 @@ export function createThreeSurface(
     ripples: undefined,
     emotes: undefined,
     lastTime: undefined,
+    lastRippleAt: undefined,
     running: false,
     rafId: undefined,
     input: {
@@ -77,7 +79,7 @@ export function createThreeSurface(
 
     state.particles?.update(state.input, deltaMs);
     state.ripples?.update(deltaMs, state.input);
-    state.emotes?.update(deltaMs, state.input);
+    state.emotes?.update(deltaMs);
 
     state.renderer.render(state.scene, state.camera);
   };
@@ -115,7 +117,10 @@ export function createThreeSurface(
     const keyLight = new THREE.PointLight(0x88ccff, 1.2, 6);
     keyLight.position.set(0, 1.2, 2);
     scene.add(keyLight);
-    scene.add(createGrid());
+    const grid = createGrid();
+    if (grid !== null) {
+      scene.add(grid);
+    }
 
     state.particles = createParticleSystem(scene);
     state.ripples = createRippleSystem(scene);
@@ -134,27 +139,31 @@ export function createThreeSurface(
   const applySignal = (signal: FrameSignal): void => {
     state.input = signalToVisualInput(signal);
     const boost = signal.pointerSpeed + signal.keypressRate * 0.5;
-    if (boost > 0.25) {
+    const now = performance.now();
+    const canRipple =
+      boost > 0.22 &&
+      (state.lastRippleAt === undefined || now - state.lastRippleAt > 90);
+    if (canRipple) {
       state.ripples?.spawn(
         state.input.focusX,
         state.input.focusY,
-        boost,
+        boost * 0.8,
         state.input.colorHue,
       );
+      state.lastRippleAt = now;
     }
-    if (signal.keypressRate > 0.05) {
+    if (signal.keypressRate > 0.05 || boost > 0.35) {
       state.emotes?.spawn(
         state.input.focusX,
         state.input.focusY,
-        signal.keypressRate,
-        state.input.colorHue,
+        Math.min(0.8, boost),
       );
     }
   };
 
   const burstAt = (x: number, y: number): void => {
     state.ripples?.spawn(x, y, 0.6, state.input.colorHue);
-    state.emotes?.spawn(x, y, 0.4, state.input.colorHue);
+    state.emotes?.spawn(x, y, 0.4);
   };
 
   const dispose = (): void => {

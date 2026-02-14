@@ -12,10 +12,10 @@ export type VisualInput = {
 };
 
 export function signalToVisualInput(signal: FrameSignal): VisualInput {
-  const hue = Math.max(
-    0,
-    Math.min(360, 200 + signal.focusX * 140 - signal.focusY * 80),
-  );
+  const horizontalHue = signal.focusX * 220;
+  const verticalShift = (0.5 - signal.focusY) * 120;
+  const chaosShift = signal.variance * 80;
+  const hue = clampHue(80 + horizontalHue + verticalShift + chaosShift);
   return {
     energy: signal.pointerSpeed,
     chaos: signal.variance,
@@ -26,4 +26,14 @@ export function signalToVisualInput(signal: FrameSignal): VisualInput {
     colorHue: hue,
     keypressRate: signal.keypressRate,
   };
+}
+
+function clampHue(value: number): number {
+  if (value < 0) {
+    return 0;
+  }
+  if (value > 360) {
+    return 360;
+  }
+  return value;
 }

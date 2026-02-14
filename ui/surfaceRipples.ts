@@ -23,35 +23,39 @@ export function createRippleSystem(scene: THREE.Scene): RippleSystem {
     magnitude: number,
     hue: number,
   ): void => {
-    const ringGeo = new THREE.RingGeometry(0.01, 0.08, 32);
+    const ringGeo = new THREE.RingGeometry(0.01, 0.05, 40);
     const ringMat = new THREE.MeshBasicMaterial({
       color: new THREE.Color().setHSL(hue / 360, 0.7, 0.7),
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.35,
       side: THREE.DoubleSide,
     });
     const mesh = new THREE.Mesh(ringGeo, ringMat);
     const pos = toWorldPosition(x, y);
     mesh.position.set(pos.x, pos.y, 0);
     scene.add(mesh);
-    ripples.push({ mesh, life: magnitude, maxLife: magnitude + 0.8 });
+    ripples.push({
+      mesh,
+      life: magnitude * 0.7 + 0.35,
+      maxLife: magnitude + 0.6,
+    });
   };
 
   const update = (deltaMs: number, input: VisualInput): void => {
     const next: Ripple[] = [];
     for (const ripple of ripples) {
-      ripple.life -= deltaMs / 1200;
+      ripple.life -= deltaMs / 900;
       const t = ripple.life / ripple.maxLife;
       if (ripple.life <= 0) {
         scene.remove(ripple.mesh);
         continue;
       }
-      const scale = 1 + (1 - t) * 3;
+      const scale = 1 + (1 - t) * 1.8;
       ripple.mesh.scale.set(scale, scale, 1);
       const material = ripple.mesh.material;
       if (material instanceof THREE.MeshBasicMaterial) {
-        material.opacity = t * 0.8;
-        material.color.setHSL(input.colorHue / 360, 0.7, 0.7);
+        material.opacity = t * 0.6;
+        material.color.setHSL(input.colorHue / 360, 0.55, 0.62);
       }
       next.push(ripple);
     }
